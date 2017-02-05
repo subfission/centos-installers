@@ -1,0 +1,60 @@
+#!/bin/bash
+#
+# File: 	install_centos6_nagios
+# Author: 	Zach Jetson
+# Date:		2-2-17
+# Requires:	CentOS 6
+#
+# Nagios Remote Host Setup script
+# This script will install Nagios NRPE with common plugins for
+# monitoring.
+# 
+
+yum update -y
+yum install -y epel-release
+yum --enablerepo=epel -y install nrpe nagios-plugins
+
+yum install -y nagios-plugins-check-updates nagios-plugins-disk nagios-plugins-http nagios-plugins-rpc nagios-plugins-mailq nagios-plugins-mysql nagios-plugins-log nagios-plugins-uptime nagios-plugins-users nagios-plugins-load nagios-plugins-ldap
+
+read -p "Hosts allowed to connect to daemon(comma seperated): " HOSTS
+
+NAGIOS_CFG=/etc/nagios/nrpe.cfg
+mv $NAGIOS_CFG /etc/nagios/nrpe.cfg.bak
+cat <<- EOF > $NAGIOS_CFG
+	# File Generated from script loader
+	#
+	# Use the nrpe.cfg.bak file for reference purposes
+	log_facility=daemon
+	pid_file=/var/run/nrpe/nrpe.pid
+	server_port=5666
+	nrpe_user=nrpe
+	nrpe_group=nrpe
+	allowed_hosts=127.0.0.1, <HOSTS>
+	dont_blame_nrpe=0
+	allow_bash_command_substitution=0
+	debug=0
+	command_timeout=60
+	connection_timeout=300
+	command[check_users]=/usr/lib64/nagios/plugins/check_users -w 5 -c 10
+	command[check_load]=/usr/lib64/nagios/plugins/check_load -w 15,10,5 -c 30,25,20
+	command[check_hda1]=/usr/lib64/nagios/plugins/check_disk -w 20% -c 10% -p /dev/hda1
+	command[check_zombie_procs]=/usr/lib64/nagios/plugins/check_procs -w 5 -c 10 -s Z
+	command[check_total_procs]=/usr/lib64/nagios/plugins/check_procs -w 150 -c 200 
+	include_dir=/etc/nrpe.d/
+	# End of config
+EOF
+
+sed -i "s/<HOSTS>/${HOSTS}/g" $NAGIOS_CFG
+
+echo
+echo "Installation concluded"
+echo
+echo "Adding to iptables"
+iptables -I INPUT -p tcp --dport 5666 -j ACCEPT
+iptables-save > /etc/sysconfig/iptables
+
+echo "Starting services"
+echo
+service nrpe start
+chkconfig nrpe on
+exit 0
