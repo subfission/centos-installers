@@ -1,0 +1,50 @@
+#!/bin/bash -
+#
+# Copyright (C) 2017 Zach Jetson
+# Created for fun on 2-2-17
+# License:  GNU General Public License version 3
+#
+# File: install_nagios_xi_nrpe_full
+#
+# Nagios XI NRPE Agent script
+# This script will install Nagios XI NRPE using the
+# Nagios XI installer agent instead of yum.
+#
+# Supported Platforms:
+#
+# This script is tested under CentOS 6, but should
+# work indentically for RedHat/CentOS 7.
+
+
+# Grab the nagios agent
+curl https://assets.nagios.com/downloads/nagiosxi/agents/linux-nrpe-agent.tar.gz | tar -xzvf - -C /tmp
+
+# Install using the fullinstall
+cd /tmp/linux-nrpe-agent
+./fullinstall
+
+error() {
+    echo "Installation exited prematurely."
+    echo
+    echo "Check log files in /tmp/linux-nrpe-agent for more details"
+    exit 1
+}
+
+XINETD_PID=$(ps -ef | grep xinetd | head -1)
+NRPE_CFG=$(ls /usr/local/nagios/etc/nrpe.cfg)
+XINET_CFG=$(ls /etc/xinetd.d/nrpe)
+
+# Check status of cfg files
+[ -z "$XINETD_PID" ] && error
+[ -z "$NRPE_CFG" ] && error
+[ -z "$XINET_CFG" ] && error
+
+# List configuration locations
+echo "Process finishing..."
+echo
+echo "xinetd config found at:"
+echo "$XINET_CFG"
+echo
+echo "Nagios XI config found at:"
+echo "$NRPE_CFG"
+echo
