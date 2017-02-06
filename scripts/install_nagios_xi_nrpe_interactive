@@ -31,11 +31,10 @@ if [ ! -d "$TMP_FILE" ]; then
     echo "Unable to download and untar Nagios XI agent"
     echo "Bailing..."
     exit 1
+else
+    # Install using the full install script
+    cd $TMP_FILE && ./fullinstall
 fi
-
-# Install using the full install script
-cd "$TMP_FILE"
-./fullinstall
 
 nrpe_install_error() {
     echo "Installation exited prematurely."
