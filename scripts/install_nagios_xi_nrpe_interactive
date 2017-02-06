@@ -31,7 +31,7 @@ if [ -d "$TMP_FILE" ]
 then
     # Install using the full install script
     cd $TMP_FILE
-    bash fullinstall
+    exec ./fullinstall
 else
     echo "Unable to download and untar Nagios XI agent"
     echo "Bailing..."
