@@ -1,0 +1,18 @@
+#!/bin/bash -
+#title         :install_red_motd.sh
+#description   :Installer script
+#author        :Zach Jetson
+#date          :20170210
+#version       :1.1.1
+#license       :GNU General Public License
+# -----------------------------------------------------
+
+if [[$UID -ne 0]]; then
+  echo "Script must be run as root!"
+  exit 1
+fi
+
+MOTD_PATH=/usr/local/bin/red-motd
+curl https://raw.githubusercontent.com/subfission/red-motd/master/bin/red-motd.sh > "$MOTD_PATH"
+chmod +x $MOTD_PATH
+echo "red-motd" >> .bash_profile
