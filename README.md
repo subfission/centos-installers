@@ -8,8 +8,7 @@ Scripts can be executed directly or downloaded and run. All scripts are intended
 
 ## Directly
 ```bash
-su -
-curl -L $(RAW_SCRIPT_URL) | bash
+sudo bash <(curl -L $RAW_SCRIPT_URL)
 ```
 
 ## Download Entire Package
