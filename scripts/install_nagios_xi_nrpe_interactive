@@ -25,15 +25,17 @@ ASSET_URL="https://assets.nagios.com/downloads/nagiosxi/agents/linux-nrpe-agent.
 # Grab the nagios agent
 curl $ASSET_URL | tar -xzvf - -C /tmp
 
-TMP_FILE=/tmp/linux-nrpe-agent
+TMP_FILE="/tmp/linux-nrpe-agent"
 
-if [ ! -d "$TMP_FILE" ]; then
+if [ -d "$TMP_FILE" ]
+then
+    # Install using the full install script
+    cd $TMP_FILE
+    ./fullinstall
+else
     echo "Unable to download and untar Nagios XI agent"
     echo "Bailing..."
     exit 1
-else
-    # Install using the full install script
-    cd $TMP_FILE && ./fullinstall
 fi
 
 nrpe_install_error() {
