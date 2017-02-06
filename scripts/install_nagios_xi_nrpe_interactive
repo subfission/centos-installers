@@ -34,7 +34,7 @@ if [ ! -d "$TMP_FILE" ]; then
 fi
 
 # Install using the full install script
-cd "$TMP_FILE" && bash -c fullinstall
+bash -c "cd $TMP_FILE && ./fullinstall"
 
 nrpe_install_error() {
     echo "Installation exited prematurely."
