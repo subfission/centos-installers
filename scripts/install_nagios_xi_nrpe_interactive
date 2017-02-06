@@ -30,6 +30,7 @@ TMP_FILE="/tmp/linux-nrpe-agent"
 if [ -d "$TMP_FILE" ]
 then
     # Install using the full install script
+    export INTERACTIVE="True"
     cd $TMP_FILE
     ./fullinstall
 else
