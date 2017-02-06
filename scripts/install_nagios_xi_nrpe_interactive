@@ -27,7 +27,7 @@ curl $ASSET_URL | tar -xzvf - -C /tmp
 
 TMP_FILE=/tmp/linux-nrpe-agent
 
-if [ -d "$TMP_FILE" ]; then
+if [ ! -d "$TMP_FILE" ]; then
     echo "Unable to download and untar Nagios XI agent"
     echo "Bailing..."
     exit 1
