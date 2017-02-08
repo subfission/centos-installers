@@ -23,9 +23,9 @@ fi
 ASSET_URL="https://assets.nagios.com/downloads/nagiosxi/agents/linux-nrpe-agent.tar.gz"
 
 # Grab the nagios agent
-curl $ASSET_URL | tar -xzvf - -C /tmp
+curl $ASSET_URL | tar -xzvf - -C /root
 
-TMP_FILE="/tmp/linux-nrpe-agent"
+TMP_FILE="/root/linux-nrpe-agent"
 
 if [ -d "$TMP_FILE" ]
 then
