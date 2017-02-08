@@ -10,17 +10,21 @@
 # monitoring.
 # 
 
+echo "Updating package cache"
 yum update -y
-yum install -y epel-release
-yum --enablerepo=epel -y install nrpe nagios-plugins
 
+echo "Installing epel-release"
+yum install -y epel-release
+
+echo "Installing nagios and plugins"
+yum --enablerepo=epel -y install nrpe nagios-plugins
 yum install -y nagios-plugins-check-updates nagios-plugins-disk nagios-plugins-http nagios-plugins-rpc nagios-plugins-mailq nagios-plugins-mysql nagios-plugins-log nagios-plugins-uptime nagios-plugins-users nagios-plugins-load nagios-plugins-ldap
 
 read -p "Hosts allowed to connect to daemon(comma seperated): " HOSTS
 
 NAGIOS_CFG=/etc/nagios/nrpe.cfg
 mv $NAGIOS_CFG /etc/nagios/nrpe.cfg.bak
-cat <<- EOF > $NAGIOS_CFG
+cat <<-EOF > $NAGIOS_CFG
 	# File Generated from script loader
 	#
 	# Use the nrpe.cfg.bak file for reference purposes
@@ -50,11 +54,11 @@ echo
 echo "Installation concluded"
 echo
 echo "Adding to iptables"
-iptables -I INPUT -p tcp --dport 5666 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 5666 -j ACCEPT
+iptables -I INPUT -m state --state NEW -m tcp -p tcp --dport 5667 -j ACCEPT
 iptables-save > /etc/sysconfig/iptables
 
 echo "Starting services"
-echo
-service nrpe start
+service nrpe restart
 chkconfig nrpe on
 exit 0
