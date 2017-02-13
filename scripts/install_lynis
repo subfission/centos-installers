@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+# File: 	  install_lynis
+# Author: 	Zach Jetson
+# Date:		  2-13-17
+# Requires:	CentOS 6
+#
+# Lynix - Security Auditing and Scanning Tool for Linux Systems
+# This script will install Lynix on CentOS systems
+# 
+
+if [ $UID -ne 0 ]; then
+    echo "Script must be run as root.  Try again!"
+    exit 1
+fi
+
+yum update ca-certificates curl nss openssl
+cat <<-EOF > /etc/yum.repos.d/cisofy-lynis.repo
+  [lynis]
+  name=CISOfy Software - Lynis package
+  baseurl=https://packages.cisofy.com/community/lynis/rpm/
+  enabled=1
+  gpgkey=https://packages.cisofy.com/keys/cisofy-software-rpms-public.key
+  gpgcheck=1
+EOF
+
+yum makecache fast
+yum install lynis
+
+echo "install complete!"
+echo
+echo "Run command with:"
+echo "  lynis audit system"
+exit 0
