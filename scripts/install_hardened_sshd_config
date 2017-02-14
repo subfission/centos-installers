@@ -1,8 +1,8 @@
 #!/bin/bash
 #
-# File: 	  install_hardened_sshd_config
+# File: 	install_hardened_sshd_config
 # Author: 	Zach Jetson
-# Date:		  2-13-17
+# Date:		2-13-17
 # Requires:	CentOS 6
 #
 # sshd_config - Configuration file for managing the
