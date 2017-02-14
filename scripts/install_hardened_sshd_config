@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+# File: 	  install_hardened_sshd_config
+# Author: 	Zach Jetson
+# Date:		  2-13-17
+# Requires:	CentOS 6
+#
+# sshd_config - Configuration file for managing the
+# security parameters of the SSH Daemon
+# 
+
+if [ $UID -ne 0 ]; then
+    echo "Script must be run as root.  Try again!"
+    exit 1
+fi
+
+SSHD_CONFIG_PATH=/etc/ssh/sshd_config
+
+mv $SSHD_CONFIG_PATH $(SSHD_CONFIG_PATH).bak
+
+CURL=`which curl`
+WGET=`which wget`
+
+SSHD_FILE='https://raw.githubusercontent.com/subfission/centos-installers/master/resources/sshd_config'
+
+if [ ! -z "$WGET" ]; then
+  DL_CMD="$CURL -Ls $SSHD_FILE > $SSHD_CONFIG_PATH"
+else
+  DL_CMD="$WGET -q -O $SSHD_CONFIG_PATH $SSHD_FILE"
+fi
+
+if [ ! -f "$SSHD_CONFIG_PATH" ]; then
+  echo "Failed to save sshd_config!"
+  mv $(SSHD_CONFIG_PATH).bak $SSHD_CONFIG_PATH
+  exit 1
+fi
+
+/scripts/restartsrv_sshd
+
+exit 0
