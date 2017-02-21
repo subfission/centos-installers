@@ -16,7 +16,7 @@ echo "Installing epel-release"
 yum install -y epel-release
 
 echo "Installing nagios and plugins"
-yum --enablerepo=epel -y install nagios-plugins nagios-plugins-check-updates nagios-plugins-disk nagios-plugins-http nagios-plugins-rpc nagios-plugins-mailq nagios-plugins-mysql nagios-plugins-log nagios-plugins-uptime nagios-plugins-users nagios-plugins-load nagios-plugins-ldap
+yum --enablerepo=epel -y install nagios-plugins nagios-plugins-check-updates nagios-plugins-disk nagios-plugins-http nagios-plugins-rpc nagios-plugins-mailq nagios-plugins-mysql nagios-plugins-log nagios-plugins-uptime nagios-plugins-users nagios-plugins-load nagios-plugins-ldap nagios-plugins-swap
 
 echo "Adding check_cpu python script"
 mkdir -p /usr/local/nagios/libexec
