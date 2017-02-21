@@ -9,6 +9,11 @@
 # This script will install only common Nagios Plugins.
 # 
 
+if [ $UID -ne 0 ]; then
+    echo "Script must be run as root.  Try again!"
+    exit 1
+fi
+
 echo "Updating package cache"
 yum update -y
 
