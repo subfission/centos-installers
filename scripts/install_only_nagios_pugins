@@ -19,6 +19,7 @@ echo "Installing nagios and plugins"
 yum --enablerepo=epel -y install nagios-plugins nagios-plugins-check-updates nagios-plugins-disk nagios-plugins-http nagios-plugins-rpc nagios-plugins-mailq nagios-plugins-mysql nagios-plugins-log nagios-plugins-uptime nagios-plugins-users nagios-plugins-load nagios-plugins-ldap
 
 echo "Adding check_cpu python script"
+mkdir -p /usr/local/nagios/libexec
 SCRIPT_PATH="/usr/local/nagios/libexec/check_cpu"
 curl -L "https://raw.githubusercontent.com/subfission/centos-installers/master/resources/check_cpu" > $SCRIPT_PATH
 
