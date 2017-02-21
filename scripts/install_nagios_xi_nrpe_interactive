@@ -27,16 +27,13 @@ curl $ASSET_URL | tar -xzvf - -C /root
 
 TMP_FILE="/root/linux-nrpe-agent"
 
-if [ -d "$TMP_FILE" ]
-then
-    # Install using the full install script
-    cd $TMP_FILE
-    ./fullinstall
-else
+if [ ! -d "$TMP_FILE" ]; then
     echo "Unable to download and untar Nagios XI agent"
     echo "Bailing..."
     exit 1
 fi
+
+cd $TMP_FILE
 
 nrpe_install_error() {
     echo "Installation exited prematurely."
@@ -45,21 +42,75 @@ nrpe_install_error() {
     exit 1
 }
 
-XINETD_PID=$(ps -ef | grep xinetd | head -1)
-NRPE_CFG=$(ls /usr/local/nagios/etc/nrpe.cfg)
-XINET_CFG=$(ls /etc/xinetd.d/nrpe)
+clean_up() {
+    echo "Cleaning up"
+    rm -rf $TMP_FILE
+}
 
-# Check status of cfg files
-[ -z "$XINETD_PID" ] && nrpe_install_error
-[ -z "$NRPE_CFG" ] && nrpe_install_error
-[ -z "$XINET_CFG" ] && nrpe_install_error
+install_check_cpu() {
+    echo "Adding check_cpu python script"
+    SCRIPT_PATH="/usr/local/nagios/libexec/check_cpu"
+    curl -L "https://raw.githubusercontent.com/subfission/centos-installers/master/resources/check_cpu" > $SCRIPT_PATH
 
-# List configuration locations
-echo "Process finishing..."
-echo
-echo "xinetd config found at:"
-echo "$XINET_CFG"
-echo
-echo "Nagios XI config found at:"
-echo "$NRPE_CFG"
-echo
+    echo "Making script executable"
+    chmod +x $SCRIPT_PATH
+
+    echo "Setting permissions"
+    chown root:nagios $SCRIPT_PATH
+}
+
+install_all() {
+    ./fullinstall
+    
+    XINETD_PID=$(ps -ef | grep xinetd | head -1)
+    NRPE_CFG=$(ls /usr/local/nagios/etc/nrpe.cfg)
+    XINET_CFG=$(ls /etc/xinetd.d/nrpe)
+
+    # Check status of cfg files
+    [ -z "$XINETD_PID" ] && nrpe_install_error
+    [ -z "$NRPE_CFG" ] && nrpe_install_error
+    [ -z "$XINET_CFG" ] && nrpe_install_error
+
+    install_check_cpu
+    clean_up
+    
+    # List configuration locations
+    echo "Process finishing..."
+    echo
+    echo "xinetd config found at:"
+    echo "$XINET_CFG"
+    echo
+    echo "Nagios XI config found at:"
+    echo "$NRPE_CFG"
+    echo
+    exit 0
+}
+
+install_plugins() {
+    touch installed.services
+    touch installed.firewall
+    
+    ./fullinstall
+    yum remove -y xinetd nrpe 
+    
+    install_check_cpu
+    clean_up
+    
+    echo "Complete"
+    echo
+    exit 0
+}
+
+echo "You will install the firewall configuration, NRPE, xinetd, and services by default."
+read -p "Install only the plugins? y/[N]: " res
+
+case "$res" in
+    n | N | "")
+        echo "Installing everything"
+        # Install using the full install script
+        install_all
+        ;;
+    *)
+        echo "Installing plugins"
+        install_plugins
+esac        
