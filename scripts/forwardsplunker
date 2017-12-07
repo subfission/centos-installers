@@ -1,0 +1,62 @@
+#!/bin/bash
+# Downloader script for Splunk Universal Forwarder
+#
+# This script is coded for version 7.0.0.  The version & hash will need to be adjusted
+# accordingly for the version desired.
+#
+# Usage: 
+#     bash forwardsplunker
+#
+version="7.0.0"         # Splunk product Version
+hash="c8a78efdd40f"     # Versioned HASH
+
+# --- Dont edit below ---
+filename="splunkforwarder-${version}-${hash}-linux-2.6-x86_64.rpm"
+
+cd ~
+mkdir SplunkDownloader
+cd SplunkDownloader
+
+echo "Downloading Splunk PGP Public Key..."
+curl -O "https://docs.splunk.com/images/6/6b/SplunkPGPKey.pub"
+rpm --import "SplunkPGPKey.pub"
+
+echo "Downloading Splunk..."
+rpm -i "https://download.splunk.com/products/universalforwarder/releases/${version}/linux/${filename}"
+
+splunk_path="/opt/splunkforwarder"
+
+echo "Adding bash completions"
+source "${splunk_path}/bin/setSplunkEnv"
+echo "export SPLUNK_HOME=/opt/splunkforwarder" >> ~/.bash_profile
+echo 'export PATH=$SPLUNK_HOME/bin:$PATH' >> ~/.bash_profile
+
+echo "Enabling boot-start"
+$splunk_path/bin/splunk enable boot-start -user splunk --accept-license --no-prompt --answer-yes
+
+echo "Housekeeping..."
+rm -rf ~/SplunkDownloader
+chown -R splunk:splunk $splunk_path
+
+echo "Setting up permissions..."
+if [ ! -f /opt/fix_splunk_perms ]; then
+  curl -L https://raw.githubusercontent.com/subfission/centos-installers/master/scripts/fix_splunk_perms --silent > /opt/fix_splunk_perms
+  echo "New script added! < /opt/fix_splunk_perms"
+fi
+chmod +x /opt/fix_splunk_perms 2>/dev/null
+bash /opt/fix_splunk_perms
+
+echo "Splunk Config Path: /opt/splunkforwarder/etc/"
+
+read -p 'Forward Server IP:' SERVER
+read -p 'Listening Port:' PORT
+splunk add forward-server $SERVER:$PORT
+iptables -I INPUT -p tcp -s $SERVER -j ACCEPT
+iptables -I OUTPUT -p tcp -d $SERVER -j ACCEPT
+echo
+echo "Account credentials should be changed from defaults."
+echo "User: splunk"
+echo "Pass: changeme"
+echo
+echo "done"
+exit 0
