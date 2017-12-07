@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+# This script will attempt to resolve issues with Splunk permissions
+#
+/usr/bin/setfacl -m g:splunk:rx /var/log/cron
+/usr/bin/setfacl -m g:splunk:rx /var/log/maillog
+/usr/bin/setfacl -m g:splunk:rx /var/log/secure
+/usr/bin/setfacl -m g:splunk:rx /var/log/spooler
+/usr/bin/setfacl -m g:splunk:rx /var/log/exim_mainlog
+/usr/bin/setfacl -m g:splunk:rx /var/log/exim_paniclog
+/usr/bin/setfacl -m g:splunk:rx /var/log/exim_rejectlog
+/usr/bin/setfacl -m g:splunk:rx /var/log/yum.log
+/usr/bin/setfacl --recursive -d -m g:splunk:rx /var/log/apache2
+/usr/bin/setfacl --recursive -m g:splunk:rx /var/log/apache2
+/usr/bin/setfacl --recursive -m g:splunk:rx /var/log/audit
