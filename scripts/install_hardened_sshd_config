@@ -35,6 +35,10 @@ if [ ! -f "$SSHD_CONFIG_PATH" ]; then
   exit 1
 fi
 
-service sshd reload
-
+if [ ! -f /etc/ssh/sshd-banner ]; then
+    echo 'Place your SSH pre-authentication banner in: /etc/ssh/sshd-banner'
+    echo "Reload the SSH service configuration using: service sshd reload"
+else
+    service sshd reload
+fi
 exit 0
