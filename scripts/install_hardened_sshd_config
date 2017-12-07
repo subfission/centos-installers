@@ -35,6 +35,6 @@ if [ ! -f "$SSHD_CONFIG_PATH" ]; then
   exit 1
 fi
 
-/scripts/restartsrv_sshd
+service sshd reload
 
 exit 0
