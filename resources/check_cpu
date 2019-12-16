@@ -22,6 +22,8 @@
 # DESCRIPTION : Checks the CPU activity
 # AUTHORS :     Alejandro.Alvarez.Ayllon@cern.ch
 # Edited by Zach Jetson
+# This file is meant for use with Nagios and has been modified to support
+# proper checks.
 ##############################################################################
 
 import commands
