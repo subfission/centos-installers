@@ -1,3 +1,5 @@
+# See: https://linux-audit.com/audit-and-harden-your-ssh-configuration/
+
 #	$OpenBSD: sshd_config,v 1.80 2008/07/02 02:24:18 djm Exp $
 
 # This is the sshd server system-wide configuration file.  See
@@ -39,8 +41,9 @@ SyslogFacility AUTHPRIV
 # Authentication:
 
 #LoginGraceTime 2m
-PermitRootLogin without-password
+PermitRootLogin no
 #StrictModes yes
+# Limit the number of retries to reduce bruteforcing
 MaxAuthTries 3
 MaxSessions 2
 
@@ -106,7 +109,8 @@ AcceptEnv XMODIFIERS
 AllowAgentForwarding no
 AllowTcpForwarding no
 #GatewayPorts no
-#X11Forwarding no
+# Disable X11 unless needed
+X11Forwarding no
 #X11Forwarding yes
 #X11DisplayOffset 10
 #X11UseLocalhost yes
@@ -115,7 +119,7 @@ AllowTcpForwarding no
 #TCPKeepAlive yes
 #UseLogin no
 #UsePrivilegeSeparation yes
-#PermitUserEnvironment no
+#UserEnvironment no
 Compression no
 #ClientAliveInterval 0
 #ClientAliveCountMax 3
